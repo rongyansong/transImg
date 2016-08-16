@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{margin: 0; padding: 0; box-sizing: border-box}
+        .box{
+            width: 500px;
+            height: 300px;
+            margin: 100px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        ol{
+            list-style: none;
+            width: 250px;
+            height: 30px;
+            position: absolute;
+            bottom: 20px;
+            right: 0px;
+            clear: both;
+            z-index: 1000;
+        }
+        ol li{
+            width: 30px;
+            line-height: 30px;
+            border: 1px solid red;
+            float: left;
+            margin: 5px;
+            text-align: center;
+            background: #ccc;
+            opacity: 0.8;
+        }
+        ul img{
+            width: 500px;
+            height: 300px;
+        }
+        ul{
+            list-style: none;
+            width: 500px;
+            height: 300px;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        ul li{
+            width: 500px;
+            height: 300px;
+
+        }
+        .active{
+            background: orange;
+        }
+    </style>
+    <script src="../js/move.js"></script>
+    <script>
+        window.onload = function (){
+            var oDiv = document.getElementById('div1');
+            var oOl = document.getElementsByTagName('ol')[0];
+            var oUl = document.getElementsByTagName('ul')[0];
+            var ali = oOl.getElementsByTagName('li');
+            var now = 0;
+
+            for(var i = 0; i < ali.length; i++){
+                ali[i].index = i;
+
+                ali[i].onclick = function(){
+                    now = this.index;
+                    tab();
+                };
+            }
+            function tab(){
+                for(var i = 0; i < ali.length; i++){
+                    ali[i].className = '';
+                }
+                ali[now].className = 'active';
+//                    oUl.style.top = -300 * this.index + 'px';
+                startMove(oUl, 'top', -300 * now)
+            }
+
+            function next(){
+                now++;
+                if(now == ali.length){
+                    now = 0;
+                }
+                tab();
+            }
+//            clearInterval(timer);
+             var timer = setInterval(next, 3000);
+            oDiv.onmouseover = function(){
+                clearInterval(timer);
+            };
+            oDiv.onmouseout = function(){
+                timer = setInterval(next, 3000)
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="div1" class="box">
+        <ol>
+            <li class="active">1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>6</li>
+        </ol>
+        <ul >
+            <li><img src="../img/moveImage/1.jpg" alt=""/></li>
+            <li><img src="../img/moveImage/2.jpg" alt=""/></li>
+            <li><img src="../img/moveImage/3.jpg" alt=""/></li>
+            <li><img src="../img/moveImage/4.jpg" alt=""/></li>
+            <li><img src="../img/moveImage/5.jpg" alt=""/></li>
+            <li><img src="../img/moveImage/6.png" alt=""/></li>
+        </ul>
+    </div>
+</body>
+</html>
