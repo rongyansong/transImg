@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{margin: 0; padding: 0; box-sizing: border-box}
+        ul{list-style: none}
+
+        .play{
+            width: 280px;
+            height: 300px;
+            margin: 100px auto;
+            background: #9A9A9A;
+            position: relative;
+            overflow: hidden;
+        }
+        .bigPic{
+            width: 100%;
+            height: 220px;
+            position: relative;
+            clear: both;
+        }
+        .bigPic li{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 220px;
+            overflow: hidden;
+        }
+        .bigPic img{
+            width: 280px;
+            height: 220px;
+        }
+        .left, .right{
+            width: 40px;
+            line-height: 40px;
+            background: #ffffff;
+            position: absolute;
+            top: 43%;
+            z-index: 1001;
+            font-size: 40px;
+            font-weight: bolder;
+            text-align: center;
+            opacity: 0;
+            border-radius: 3px;
+        }
+        .left{
+            left: 10px;
+        }
+        .right{
+            right: 10px;
+        }
+        .mark_left, .mark_right{
+            display: block;
+            width: 50%;
+            height: 220px;
+            position: absolute;
+            top: 0;
+            z-index: 1000;
+            opacity: 0;
+        }
+        .mark_left{
+            left: 0;
+            background: pink;
+        }
+        .mark_right{
+            right: 0;
+            background: yellow;
+        }
+        .text, .length{
+            width: 50%;
+            line-height: 20px;
+            position: absolute;
+            bottom: 0;
+            opacity: 0.5;
+            background: black;
+            font-size: 12px;
+            z-index: 999;
+            color: #cccccc;
+            padding: 0 10px;
+        }
+        .text{
+            left: 0;
+            text-align: left;
+        }
+        .length{
+            right: 0;
+            text-align: right;
+        }
+
+        .smallPic{
+            width: 280px;
+            height: 80px;
+            clear: both;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+        .smallPic li{
+            width: 90px;
+            height: 80px;
+            float: left;
+            padding: 10px 0 10px 10px;
+            opacity: 0.6;
+        }
+        .smallPic img{
+            width: 80px;
+            height: 60px;
+        }
+    </style>
+    <script src="../js/move.js"></script>
+    <script>
+        function getByClass(oParent, sClass){
+            var aEle = oParent.getElementsByTagName('*');
+            var aResult = [];
+            for(var i = 0; i < aEle.length; i++){
+                if(aEle[i].className == sClass){
+                    aResult.push(aEle[i]);
+                }
+            }
+            return aResult;
+        }
+        window.onload = function(){
+            var oDiv = document.getElementById("playimage");
+            var oBtnLeft = getByClass(oDiv, 'left')[0];
+            var oBtnRight = getByClass(oDiv, 'right')[0];
+            var oMarLeft = getByClass(oDiv, 'mark_left')[0];
+            var oMarRight = getByClass(oDiv, 'mark_right')[0];
+
+            var oUlSmall = getByClass(oDiv, 'smallPic')[0];
+            var aLiSmall = oUlSmall.getElementsByTagName('li');
+
+            var oDivBig = getByClass(oDiv, 'bigPic')[0];
+            var aLiBig = oDivBig.getElementsByTagName('li');
+
+            var nowZInddex = 2;
+            var now = 0;
+
+            oUlSmall.style.width = aLiSmall.length * aLiSmall[0].offsetWidth + 'px';
+
+            //左右按钮
+            oMarLeft.onmouseover = oBtnLeft.onmouseover = function(){
+                startMove(oBtnLeft, 'opacity', 100)
+            };
+            oMarLeft.onmouseout = oBtnLeft.onmouseout = function(){
+                startMove(oBtnLeft, 'opacity', 0)
+            };
+            oMarRight.onmouseover = oBtnRight.onmouseover = function(){
+                startMove(oBtnRight, 'opacity', 100)
+            };
+            oMarRight.onmouseout = oBtnRight.onmouseoout = function(){
+                startMove(oBtnRight, 'opacity', 0)
+            };
+
+            //大图切换
+            for(var i = 0; i < aLiSmall.length; i++){
+                aLiSmall[i].index = i;
+                aLiSmall[i].onclick = function(){
+                    //当在前页时，点击不会变化
+                    if(this.index == now)return;
+                    now = this.index;
+                    tab();
+                };
+                //小图鼠标悬浮透明度
+                aLiSmall[i].onmouseover = function(){
+                    startMove(this, 'opacity', 100);
+                };
+                aLiSmall[i].onmouseout = function(){
+                    if(this.index != now)
+                    startMove(this, 'opacity', 60);
+                }
+            }
+
+            function tab(){
+                //点击当前页一次，层级提高一
+                aLiBig[now].style.zIndex = nowZInddex++;
+                //小图透明度点击后变化
+                for(var i = 0; i < aLiSmall.length; i++){
+                    startMove(aLiSmall[i], 'opacity', 60);
+                }
+                startMove(aLiSmall[now], 'opacity', 100);
+                //宽度变为0，点击时让图片缓慢拉下
+                aLiBig[now].style.height = 0;
+                startMove(aLiBig[now], 'height', 220);
+                //移动小图片的ul
+                if(now == 0){
+                    startMove(oUlSmall, 'left', 0);
+                }else if(now == aLiSmall.length - 1){
+                    startMove(oUlSmall, 'left', -(now - 2) * aLiSmall[0].offsetWidth);
+
+                }else{
+                    startMove(oUlSmall, 'left', -(now - 1) * aLiSmall[0].offsetWidth);
+                }
+            }
+            oBtnLeft.onclick = function(){
+                now--;
+                if(now == -1){
+                    now = aLiSmall.length -1;
+                }
+                tab();
+            };
+            oBtnRight.onclick = function(){
+                now ++;
+                if(now == aLiSmall.length){
+                    now = 0;
+                }
+                tab();
+            }
+            var timer = setInterval(oBtnRight.onclick, 3000);
+            oDiv.onmouseover = function(){
+                clearInterval(timer);
+            }
+            oDiv.onmouseout = function(){
+                timer = setInterval(oBtnRight.onclick, 3000);
+            }
+        }
+
+    </script>
+</head>
+<body>
+<div id="playimage" class="play">
+    <ul class="bigPic">
+        
+        <div class="left">&lt;</div>
+        <div class="right">&gt;</div>
+        
+        <div class="text">加载图片说明......</div>
+        <div class="length">计算图片数量......</div>
+
+        <a class="mark_left" href="javascript:;"></a>
+        <a class="mark_right" href="javascript:;"></a>
+        <div class="bg"></div>
+        
+        <li style="z-index: 1"><img src="../img/moveImage/1.jpg" alt=""/></li>
+        <li><img src="../img/moveImage/2.jpg" alt=""/></li>
+        <li><img src="../img/moveImage/3.jpg" alt=""/></li>
+        <li><img src="../img/moveImage/4.jpg" alt=""/></li>
+        <li><img src="../img/moveImage/5.jpg" alt=""/></li>
+        <li><img src="../img/moveImage/6.png" alt=""/></li>
+    </ul>
+    <ul class="smallPic">
+        <li style="opacity: 1"><img src="../img/moveImage/1.jpg" alt=""/></li>
+        <li><img src="../img/moveImage/2.jpg" alt=""/></li>
+        <li><img src="../img/moveImage/3.jpg" alt=""/></li>
+        <li><img src="../img/moveImage/4.jpg" alt=""/></li>
+        <li><img src="../img/moveImage/5.jpg" alt=""/></li>
+        <li><img src="../img/moveImage/6.png" alt=""/></li>
+    </ul>
+</div>
+</body>
+</html>
